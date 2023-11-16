@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
 
-class Cell:
+class Cell(NamedTuple):
     track: str
     number: int
