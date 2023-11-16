@@ -9,11 +9,19 @@ from ..models.simcard import SIMCard
 from ..utils import get_number_from_sms
 from ..database.tools import save_simcard
 
+
 def connect():
     """Присоединяет и включает модем"""
     modem_connect.execute()
     modem_on.execute()
-    
+
+
+def get_sms(simcard: SIMCard):
+    command = get_command_select_card(simcard._cell)
+    command.execute()
+    connect()
+    return simcard.get_sms()
+
 
 def check_have_sim(cell: Cell):
     """Проверяет наличия СИМ-карты в ячейке"""
@@ -68,5 +76,4 @@ def init():
         else:
             print('Нет СИМ-карты в ячейке')
             
-    
     

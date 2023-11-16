@@ -11,5 +11,8 @@ class SIMCard():
         command = get_command_view_sms(count)
         while True:
             message = command.execute()
-            if message.split()[1] != "ERROR": 
-                return message
+            try:
+                if message.split()[1] != "ERROR": 
+                    return message
+            except:
+                continue
