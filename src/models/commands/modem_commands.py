@@ -50,4 +50,3 @@ modem_get_rate = Command("modem>set:rate")
 
 modem_get_mode = Command("modem>set:mode")
 """Получение режима работы модема"""
-

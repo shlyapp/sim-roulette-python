@@ -16,7 +16,7 @@ class Command():
             data = {
                 'data': f'{TOKEN}||{STEP}||{self._command_text}'
             }
-            encoded_data = urllib.parse.urlenvcode(data)
+            encoded_data = urllib.parse.urlencode(data)
             full_url = f'{URL}?{encoded_data}'
 
             response = requests.get(url=full_url).text
@@ -28,5 +28,6 @@ class Command():
                 return code
 
             sleep(2)
-             
-
+            
+    def get_command_text(self) -> str:
+        return self._command_text
