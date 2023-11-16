@@ -7,7 +7,7 @@ from ..models.cell import Cell
 from ..models.simcard import SIMCard
 
 from ..utils import get_number_from_sms
-
+from ..database.tools import save_simcard
 
 def connect():
     """Присоединяет и включает модем"""
@@ -61,6 +61,7 @@ def init():
         sim = check_have_sim(cell)
         print(f'Ячейка: {cell.track}{cell.number}')
         if sim is not None:
+            save_simcard(sim)
             print('В ячейке есть СИМ-карта')
             print(f'Номер телефона: {sim._phone_number}')
             print(f'Реальный номер: {get_real_phone(sim)}')
