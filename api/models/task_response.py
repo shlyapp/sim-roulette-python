@@ -4,6 +4,6 @@ from .task_status import TaskStatus
 
 
 class TaskResponse(BaseModel):
-    id: int
+    uuid: str
     status: TaskStatus
     result: str = ""

@@ -4,5 +4,5 @@ from .task_status import TaskStatus
 
 
 class Task(BaseModel):
-    id: int
+    uuid: str
     status: TaskStatus
