@@ -20,7 +20,9 @@ def get_sms(simcard: SIMCard):
     command = get_command_select_card(simcard._cell)
     command.execute()
     connect()
-    return simcard.get_sms()
+    message = simcard.get_sms()
+    sms_clear.execute()
+    return message
 
 
 def check_have_sim(cell: Cell):
