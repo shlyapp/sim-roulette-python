@@ -15,3 +15,12 @@ def get_command_call_code(code: str):
 def get_command_call_phone(phone: str):
     """Возвращает команду для звонка на телефон"""
     return ATCommand(f"ATD+{phone}")
+
+
+simcard_status = ATCommand("AT+CREG?")
+"""Получение статуса сим-карты"""
+
+simcard_operator = ATCommand("AT+COPS=?")
+"""Получение данных о операторе"""
+
+greg_command = Command("AT+CREG?")

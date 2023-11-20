@@ -36,6 +36,9 @@ modem_on = Command("modem>on")
 modem_off = Command("modem>off")
 """Выключение модема"""
 
+modem_activation = Command("modem>activation:bool")
+"""Активация сети"""
+
 modem_status_power = Command("modem>status:power")
 """Получение статуса питания модема"""
 

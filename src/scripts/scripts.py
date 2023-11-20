@@ -14,6 +14,7 @@ def connect():
     """Присоединяет и включает модем"""
     modem_connect.execute()
     modem_on.execute()
+    modem_activation.execute()
 
 
 def get_sms(simcard: SIMCard):
@@ -49,7 +50,7 @@ def get_phone_buffer():
 def get_real_phone(simcard: SIMCard):
     """Возвращает реальный номер телефона, полученный СМС ответом"""
     sms_clear.execute()
-    command = get_command_call_code("*111*0887#")
+    command = get_command_call_code("*110#")
     command.execute()
     # fix that, need 2 response to get answer
     simcard.get_sms()
@@ -66,15 +67,20 @@ def update_number(phone_number):
 
 def init():
     """Выводит информацию о СИМ-карте в ячейке"""
-    for i in range(10):
+    for i in range(3):
         cell = Cell('A', i)
         sim = check_have_sim(cell)
+        status = simcard_status.execute()
+        operator = simcard_operator.execute()
         print(f'Ячейка: {cell.track}{cell.number}')
         if sim is not None:
-            save_simcard(sim)
+            # save_simcard(sim)
             print('В ячейке есть СИМ-карта')
             print(f'Номер телефона: {sim._phone_number}')
-            print(f'Реальный номер: {get_real_phone(sim)}')
+            print(f"Реальный номер телефона: {get_real_phone(sim)}")
+            print(f'Статус: {status}')
+            print(f'Оператор: {operator}')
+            print("---------------")
         else:
             print('Нет СИМ-карты в ячейке')
             
