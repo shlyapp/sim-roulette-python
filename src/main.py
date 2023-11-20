@@ -129,10 +129,12 @@ def get_command_answer_data(command: Command):
         response = requests.get(url=full_url).text
         if response == "0#!#0":
             continue
-        data = response.replace('#', '').split('!')
+        data = response.split()
+        logging.info(data)
         
-        if data[1].startswith(command.command_text):
-            return data[1]
+        if data[0].find(command.command_text) != -1:
+            # typically -2 - code
+            return data[-2]
         
         
 command_executor_thread = Thread(
