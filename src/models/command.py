@@ -18,7 +18,7 @@ class CommandStatus(str, Enum):
 class Command:
     def __init__(self, command_text: str):
         self.command_text = command_text
-        self.uuid = ""
+        self.uuid = uuid.uuid4()
         
     def execute(self) -> str:
         global STEP
@@ -58,12 +58,12 @@ class CommandAnswerLogs():
         self._logs.append(command_answer)
         
     def find(self, uuid: str) -> List[CommandAnswer]:
-        command_answers = list()
+        command_answer_return = None
         for command_answer in self._logs:
             if command_answer.uuid:
-                command_answers.append(command_answers)
+                command_answer_return = command_answer
         
-        return command_answers
+        return command_answer_return
 
 
 LOGS = CommandAnswerLogs()
@@ -71,18 +71,16 @@ LOGS = CommandAnswerLogs()
 
 class Macros():
     def __init__(self, commands: List[Command]) -> None:
-        self.commands = commands
+        self.commands_list = commands
         self.uuid = ""
         
-    def run(self):
-        logging.info("Macros run")
+    def run(self) -> str:
         self.uuid = uuid.uuid4()
-        for command in self.commands:
-            command = Command(command.command_text)
+        logging.info("Macros run")
+        for command in self.commands_list:
             command.uuid = self.uuid
-            QUEUE_THREAD.put(command)
+        QUEUE_THREAD.put(self)
 
-        
 
 def get_answer_response() -> str:
     data = {
@@ -132,36 +130,45 @@ def get_at_command_answer(command: ATCommand):
             return data[-2]
 
 
+def waiting_result(command: Command):
+    logging.info(f"Start command: {command.command_text}")
+    logging.info(f"uuid: {command.uuid}")
+    command.execute()
+    logging.info("Wait result of execute command")
+    command_answer = get_command_answer(command)
+    
+    if isinstance(command, ATCommand):
+        message = get_at_command_answer(command)
+        command_answer = CommandAnswer(
+            uuid=command.uuid,
+            result=command_answer.result,
+            message=message
+        )
+    
+    LOGS.add(command_answer)
+      
+    logging.info(f"Result: {command_answer.result}")
+    logging.info(f"Message: {command_answer.message}\n")
+
+
 def command_executor(queue: Queue):
     while True:
         try:
-            command = queue.get()
-            logging.info(f"Start command: {command.command_text}")
-            logging.info(f"uuid: {command.uuid}")
-            command.execute()
+            item = queue.get()
+            
+            if isinstance(item, Macros):
+                logging.info('Macros has been started')
+                for command in item.commands_list:
+                    waiting_result(command)
+                logging.info('Macros has been finished')
+            else:
+                waiting_result(item)
+                
+            print(LOGS.find(item.uuid))   
+                
         except Empty:
-            logging.info("queue empty")
             continue
-        else:
-            logging.info("Wait result of execute command")
-            command_answer = get_command_answer(command)
-            
-            if isinstance(command, ATCommand):
-                message = get_at_command_answer(command)
-                command_answer = CommandAnswer(
-                    uuid=command.uuid,
-                    result=command_answer.result,
-                    message=message
-                )
-            
-            LOGS.add(command_answer)
-            
-            if queue.qsize() == 0:
-                print(LOGS._logs)
-            
-            logging.info(f"Result: {command_answer.result}")
-            logging.info(f"Message: {command_answer.message}\n")
-
+        
 
 QUEUE_THREAD = Queue()
 

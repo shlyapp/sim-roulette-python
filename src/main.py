@@ -26,9 +26,20 @@ def main():
     
     macros.run()
     logging.info(macros.uuid)
+
+    command = Command('sound:beep')
+    QUEUE_THREAD.put(command)
+    
+    
+    macros = Macros([
+        Command('card:A7'),
+        Command('modem>connect'),
+        Command('modem>on'),
+        Command('modem>activation:bool'),
+        ATCommand('AT+CMGR=1')
+    ])
     
     macros.run()
-    logging.info(macros.uuid)
     
     while True:
         continue    
