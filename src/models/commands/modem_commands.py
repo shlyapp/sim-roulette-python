@@ -1,6 +1,6 @@
 from enum import Enum
 
-from .command import Command
+from ..command import Command
 
 
 class Mode(Enum):

@@ -1,4 +1,4 @@
-from .command import Command
+from ..command import Command
 
 
 answer_on = Command("answer=1")

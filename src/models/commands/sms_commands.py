@@ -1,4 +1,4 @@
-from .command import Command
+from ..command import Command
 
 
 def get_command_sms_send(phone: str, message: str) -> Command:

@@ -1,5 +1,5 @@
-from .at_command import ATCommand
-from .command import Command
+from ..atcommand import ATCommand
+
 
 
 def get_command_view_sms(count: int = 1):
@@ -23,4 +23,4 @@ simcard_status = ATCommand("AT+CREG?")
 simcard_operator = ATCommand("AT+COPS=?")
 """Получение данных о операторе"""
 
-greg_command = Command("AT+CREG?")
+greg_command = ATCommand("AT+CREG?")
