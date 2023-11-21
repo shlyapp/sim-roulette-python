@@ -1,9 +1,10 @@
 import requests
 import logging
 import urllib
+import uuid
 from queue import Queue, Empty
 from threading import Thread
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, List
 from enum import Enum
 
 from ..config import TOKEN, URL, STEP
@@ -17,6 +18,7 @@ class CommandStatus(str, Enum):
 class Command:
     def __init__(self, command_text: str):
         self.command_text = command_text
+        self.uuid = ""
         
     def execute(self) -> str:
         global STEP
@@ -43,10 +45,44 @@ class ATCommand(Command):
 
 
 class CommandAnswer(NamedTuple):
-    command_text: str    
+    uuid: str    
     result: CommandStatus
     message: Optional[str]
 
+
+class CommandAnswerLogs():
+    def __init__(self) -> None:
+        self._logs = list()
+        
+    def add(self, command_answer: CommandAnswer) -> None:
+        self._logs.append(command_answer)
+        
+    def find(self, uuid: str) -> List[CommandAnswer]:
+        command_answers = list()
+        for command_answer in self._logs:
+            if command_answer.uuid:
+                command_answers.append(command_answers)
+        
+        return command_answers
+
+
+LOGS = CommandAnswerLogs()
+
+
+class Macros():
+    def __init__(self, commands: List[Command]) -> None:
+        self.commands = commands
+        self.uuid = ""
+        
+    def run(self):
+        logging.info("Macros run")
+        self.uuid = uuid.uuid4()
+        for command in self.commands:
+            command = Command(command.command_text)
+            command.uuid = self.uuid
+            QUEUE_THREAD.put(command)
+
+        
 
 def get_answer_response() -> str:
     data = {
@@ -71,12 +107,12 @@ def get_command_answer(command: Command):
             logging.info(f"Result of execute command: {data[1]}")
             if data[1] is None or data[1] == "Error" or data[1] == 'NULL' or data[1] == "UNKNOWN COMMAND":
                 return CommandAnswer(
-                    command_text=command.command_text,
+                    uuid=command.uuid,
                     result=CommandStatus.failed,
                     message=data[1]
                 )
             return CommandAnswer(
-                    command_text=command.command_text,
+                    uuid=command.uuid,
                     result=CommandStatus.completed,
                     message=data[1]
                 )
@@ -101,30 +137,36 @@ def command_executor(queue: Queue):
         try:
             command = queue.get()
             logging.info(f"Start command: {command.command_text}")
+            logging.info(f"uuid: {command.uuid}")
             command.execute()
         except Empty:
+            logging.info("queue empty")
             continue
         else:
             logging.info("Wait result of execute command")
-            
             command_answer = get_command_answer(command)
             
             if isinstance(command, ATCommand):
                 message = get_at_command_answer(command)
                 command_answer = CommandAnswer(
-                    command_text=command.command_text,
+                    uuid=command.uuid,
                     result=command_answer.result,
                     message=message
                 )
+            
+            LOGS.add(command_answer)
+            
+            if queue.qsize() == 0:
+                print(LOGS._logs)
             
             logging.info(f"Result: {command_answer.result}")
             logging.info(f"Message: {command_answer.message}\n")
 
 
-queue = Queue()
+QUEUE_THREAD = Queue()
 
-command_executor_thread = Thread(
+COMMAND_EXECUTOR_THREAD = Thread(
     target=command_executor,
-    args=(queue,),
+    args=(QUEUE_THREAD,),
     daemon=True
 )

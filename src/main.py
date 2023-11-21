@@ -1,7 +1,8 @@
 import logging
 
-from .models.command import command_executor_thread, queue, Command, ATCommand
-
+from .models.cell import Cell
+from .models.command import Macros, COMMAND_EXECUTOR_THREAD, QUEUE_THREAD, Command, ATCommand
+from .scripts import connect
 
 logging.basicConfig(
     filename="sim-roulette-python/src/logs2.log",
@@ -14,16 +15,23 @@ logging.basicConfig(
 
 
 def main():
-    command_executor_thread.start()
+    COMMAND_EXECUTOR_THREAD.start()
+    macros = Macros([
+        Command('card:A3'),
+        Command('modem>connect'),
+        Command('modem>on'),
+        Command('modem>activation:bool'),
+        ATCommand('AT+CMGR=1')
+    ])
+    
+    macros.run()
+    logging.info(macros.uuid)
+    
+    macros.run()
+    logging.info(macros.uuid)
+    
     while True:
-        command_text = input("Please, input command text: ")
-        if command_text.startswith('AT'):
-            command = ATCommand(command_text=command_text)
-        else:
-            command = Command(command_text=command_text)
-        logging.info(f"Add command {command_text} in queue")
-        queue.put(command)
-
+        continue    
     
 if __name__ == "__main__":
     main()

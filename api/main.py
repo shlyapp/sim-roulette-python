@@ -10,7 +10,7 @@ from .models.task_response import TaskResponse
 
 from ..src.database.tools import load_simcard
 from ..src.models.simcard import SIMCard
-from ..src.scripts.scripts import get_sms
+from ..src.scripts_old.scripts import get_sms
 
 
 app = FastAPI()
