@@ -4,6 +4,8 @@ from .database import Database
 from ..config import DATABASE
 from ..models.simcard import SIMCard
 from ..models.cell import Cell
+from ..commands.command_answer import CommandAnswer
+from ..commands.command import Command
 
 database = Database(
     host=DATABASE['HOST'], 
@@ -24,7 +26,7 @@ def save_simcard(simcard: SIMCard) -> None:
         pass
 
 
-def load_simcard() -> List[SIMCard]:
+def get_simcards() -> List[SIMCard]:
     """Возвращает все СИМ-карты из БД"""
     data = database.select(
         table='main_simroulette',
@@ -41,3 +43,13 @@ def load_simcard() -> List[SIMCard]:
         ))
     
     return simcards
+
+
+def save_command_answer(command: Command, command_answer: CommandAnswer) -> None:
+    database.insert(
+        table='main_simroulettelogs',
+        columns=['operation_uuid', 'command_text', 'status', 'message'],
+        values=[command_answer.uuid, command.command_text, command_answer.status, command_answer.message]
+    )
+
+    database.commit()

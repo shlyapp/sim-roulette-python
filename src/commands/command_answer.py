@@ -3,20 +3,25 @@ import requests
 import urllib
 import logging
 
-from ...config import TOKEN, URL, STEP
+from ..config import TOKEN, URL, STEP
 from .command_status import CommandStatus
 from .command import Command
-from .at_command import ATCommand
+from .command_type import CommandType
 
 
 class CommandAnswer():
+    """Ответ на выполнение команды"""
     def __init__(self, uuid: uuid.UUID) -> None:
         self.uuid = uuid
+        """UUID"""
         self.status = CommandStatus.pending
+        """Статус выполнения"""
         self.message = ""
+        """Ответ на команду"""
 
 
 def get_answer_response() -> str:
+    """Возвращает ответ на команду"""
     data = {
         'data': f'{TOKEN}'
     }
@@ -27,7 +32,8 @@ def get_answer_response() -> str:
     return response
 
 
-def fill_command_answer(command: Command):
+def fill_command_answer(command: Command) -> None:
+    """Заполняет данные ответа у команды"""
     global STEP
     while True:
         response = get_answer_response()
@@ -46,7 +52,8 @@ def fill_command_answer(command: Command):
             command.command_answer.status = CommandStatus.completed
 
 
-def fill_at_command_answer(command: ATCommand):
+def fill_at_command_answer(command: Command) -> None:
+    """Заполняет дополнительные поля у at command"""
     while True:
         response = get_answer_response()
         if response == "0#!#0":
@@ -58,7 +65,8 @@ def fill_at_command_answer(command: ATCommand):
             command.command_answer.message = data[-2]
 
 
-def run_command(command: Command):
+def run_command(command: Command) -> None:
+    """Запускает выполнение команды и получает ответ"""
     logging.info(f"Start command: {command.command_text}")
     logging.info(f"uuid: {command.uuid}")
     command.execute()
@@ -66,6 +74,6 @@ def run_command(command: Command):
     logging.info("Wait result of execute command")
     fill_command_answer(command)
     
-    if isinstance(command, ATCommand):
+    if command.type == CommandType.atcommand:
         fill_at_command_answer(command)
 

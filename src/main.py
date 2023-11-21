@@ -1,7 +1,7 @@
 import logging
 
-from .models.commands.command_pool import CommandPool
-from .models.commands.command import Command
+from .commands.command_pool import CommandPool
+from .commands.command import Command
 
 
 logging.basicConfig(
@@ -19,11 +19,12 @@ def main():
     command = Command("hello")
     print(command.uuid)
     print(command.command_answer)
-    answer = command_pool.add_command_in_queue(command)
+    answer = command_pool.add_command(command)
     print(command.command_answer.status)    
     command_pool.start()
 
-    print(command.command_answer.status)    
+    print(command.command_answer.status)
+    return
 
 if __name__ == "__main__":
     main()
