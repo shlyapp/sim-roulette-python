@@ -1,13 +1,14 @@
 import requests
 import urllib
 import uuid
+import logging
 
 from .command_answer import CommandAnswer
 from .command_type import CommandType
 from .command_status import CommandStatus
 from .command_handler import command_finish
 from ..config import TOKEN, STEP, URL
-
+from ..database.tools import save_command_answer
 
 class Command:
     """Команда"""
@@ -26,10 +27,12 @@ class Command:
     
     @command_finish()
     def finish_event(self) -> None:
-        print("Command has been complete")
+        save_command_answer(self)
+        logging.info(f"Finish command {self.command_text}")
     
     def execute(self) -> int:
         """Выполнение команды, отправка запроса на сервер"""
+        logging.info(f"Run command: {self.command_text}")
         global STEP
         data = {
             'data': f'{TOKEN}||{STEP}||{self.command_text}'

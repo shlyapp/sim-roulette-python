@@ -25,6 +25,8 @@ macros = get_macros_connect(Cell('A', 3))
 command_pool.start()
 
 command_pool.add_command(macros)
+# macros = get_macros_connect(Cell('A', 5))
+# command_pool.add_command(macros)
 
 
 def main():

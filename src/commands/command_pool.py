@@ -9,7 +9,7 @@ from .macros import Macros
 from .command import Command
 from .command_answer import *
 
-from ..database.tools import save_command_answer
+# from ..database.tools import save_command_answer
 
 
 class CommandPool():
@@ -26,35 +26,9 @@ class CommandPool():
         while True:
             try:
                 item = self._queue.get()
-                
-                # if isinstance(item, Macros):
-                    # macros = cast(Macros, item)
-                    # for i, command in enumerate(macros.commands):
-                    #     command.command_answer.status = CommandStatus.in_progress
-                    #     run_command(command)
-                        
-                    #     if i == len(macros.commands) - 1:
-                    #         command.command_answer.message += " complete"
-                    #         macros.command_answer.message = command.command_answer.message
-                    #         save_command_answer(command)
-                        
-                    #     logging.info(f"""
-                    #                  Command answer
-                    #                  uuid: {command.command_answer.uuid}
-                    #                  status: {command.command_answer.status}
-                    #                  message: {command.command_answer.message}
-                    #                  """)
-                        
-                # else:
                 command = cast(Command, item)
                 command.command_answer.status = CommandStatus.in_progress
                 run_command(command)
-                logging.info(f"""
-                                    Command answer
-                                    uuid: {command.command_answer.uuid}
-                                    status: {command.command_answer.status}
-                                    message: {command.command_answer.message}
-                                    """)
             except Empty:
                 pass
 
@@ -63,7 +37,7 @@ class CommandPool():
             command = cast(Command, item)
             command.uuid = uuid.uuid4()
             command.command_answer = CommandAnswer(uuid=item.uuid)
-            save_command_answer(command)
+            # save_command_answer(command)
         else:
             macros = cast(Macros, item)
             macros.uuid = uuid.uuid4()
@@ -71,7 +45,7 @@ class CommandPool():
             for macros_command in macros.commands:
                 macros_command.uuid = macros.uuid
                 macros_command.command_answer = CommandAnswer(uuid=macros.uuid)
-                save_command_answer(macros_command)
+                # save_command_answer(macros_command)
                 
         return item.uuid
 

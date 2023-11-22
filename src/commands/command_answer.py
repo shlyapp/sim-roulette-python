@@ -71,11 +71,6 @@ def fill_at_command_answer(command) -> None:
 
 def run_command(command) -> None:
     """Запускает выполнение команды и получает ответ"""
-    logging.info(f"""
-                 Execute command
-                 uuid: {command.uuid}
-                 command_text: {command.command_text}
-                 """)
     step = command.execute()
     save_command_answer(command)
     command.command_answer.status = CommandStatus.in_progress
