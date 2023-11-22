@@ -21,16 +21,17 @@ class CommandPool():
         while True:
             try:
                 item = self._queue.get()
-
+                
                 if isinstance(item, Macros):
                     macros = cast(Macros, item)
                     for command in macros.commands:
+                        (f'Выполнение {command.command_text}')
                         run_command(command)
                         command.command_answer.status = CommandStatus.in_progress
                 else:
                     command = cast(Command, item)
-                    command.command_answer.status = CommandStatus.in_progress
                     run_command(command)
+                    command.command_answer.status = CommandStatus.in_progress
             except Empty:
                 pass
 

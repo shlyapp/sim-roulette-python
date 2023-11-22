@@ -1,7 +1,8 @@
-import logging
 import requests
 import urllib
+import uuid
 
+from .command_answer import CommandAnswer
 from .command_type import CommandType
 from ..config import TOKEN, STEP, URL
 
@@ -13,25 +14,23 @@ class Command:
         """Текст комманды"""
         self.type = CommandType.command
         """Тип команды"""
-        self.uuid = None
+        self.uuid = uuid.uuid4()
         """UUID"""
-        self.command_answer = None
+        self.command_answer = CommandAnswer
         """Ответ на команду"""
         if command_text.startswith("AT"):
             self.type = CommandType.atcommand
         
-    def execute(self):
+    def execute(self) -> int:
         """Выполнение команды, отправка запроса на сервер"""
         global STEP
         data = {
             'data': f'{TOKEN}||{STEP}||{self.command_text}'
         }
         
-        logging.info(f'Send request with data: {data}')
-        
         encoded_data = urllib.parse.urlencode(data)
         full_url = f'{URL}?{encoded_data}'
 
         requests.get(url=full_url).text
-        STEP += 1
-        logging.info(f'Command {self.command_text} has been execute')
+        STEP = STEP + 1
+        return STEP

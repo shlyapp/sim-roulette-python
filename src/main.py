@@ -1,30 +1,27 @@
 import logging
 
 from .commands.command_pool import CommandPool
-from .commands.command import Command
-
+from .tools.macros import get_macros_connect
+from .models.cell import Cell
 
 logging.basicConfig(
-    filename="sim-roulette-python/src/logs2.log",
+    filename="sim-roulette-python/logs/logs.log",
     filemode="a",
     encoding="utf-8",
-    format="%command_status(asctime)s %(levelname)s %(message)s",
+    format="%(asctime)s %(levelname)s %(message)s",
     datefmt="%H:%M:%S",
     level=logging.INFO,
 )
 
-
 def main():
     command_pool = CommandPool()
-    command = Command("hello")
-    print(command.uuid)
-    print(command.command_answer)
-    answer = command_pool.add_command(command)
-    print(command.command_answer.status)    
+    macros = get_macros_connect(Cell('A', 3))
+    command_pool.add_command(macros)
     command_pool.start()
+    
+    while True:
+        continue
 
-    print(command.command_answer.status)
-    return
 
 if __name__ == "__main__":
     main()
