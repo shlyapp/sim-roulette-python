@@ -2,6 +2,8 @@ import uuid
 import requests
 import urllib
 import logging
+from time import sleep
+from threading import Thread
 
 from ..config import TOKEN, URL
 from .command_status import CommandStatus
@@ -30,7 +32,7 @@ def get_answer_response() -> str:
     response = requests.get(url=full_url).text
     return response
 
-from ..database.tools import save_command_answer
+from ..database.tools import save_command_answer, get_command_answer
 
 def fill_command_answer(command, step) -> None:
     """Заполняет данные ответа у команды"""
@@ -61,8 +63,10 @@ def fill_at_command_answer(command) -> None:
             continue
         data = response.split()
         
-        if data[0].find(command.command_text) != -1:
-            command.command_answer.message = data[-2]
+        if response.find(command.command_text) != -1:
+            command.command_answer.message = response
+            save_command_answer(command)
+            return
 
 
 def run_command(command) -> None:

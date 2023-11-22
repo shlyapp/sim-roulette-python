@@ -4,6 +4,7 @@ import uuid
 
 from .command_answer import CommandAnswer
 from .command_type import CommandType
+from .command_status import CommandStatus
 from ..config import TOKEN, STEP, URL
 
 
@@ -34,3 +35,8 @@ class Command:
         requests.get(url=full_url).text
         STEP = STEP + 1
         return STEP
+    
+    def is_finish(self) -> bool:
+        if self.command_answer.status in [CommandStatus.failed, CommandStatus.completed]:
+            return True
+        return False

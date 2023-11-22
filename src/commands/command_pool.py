@@ -35,7 +35,9 @@ class CommandPool():
                         
                         if i == len(macros.commands) - 1:
                             command.command_answer.message += " complete"
+                            macros.command_answer.message = command.command_answer.message
                             save_command_answer(command)
+                            print("save")
                         
                         logging.info(f"""
                                      Command answer

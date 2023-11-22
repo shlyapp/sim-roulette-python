@@ -2,9 +2,13 @@ import logging
 from datetime import date
 
 from .commands.command_pool import CommandPool
-from .tools.macros import get_macros_connect
+from .commands.macros import Macros
+from .commands.command_handler import command_handler
+from .commands.command_answer import CommandStatus
+from .tools.macros import get_macros_number
 from .tools.commands.card import get_command_select_card
 from .models.cell import Cell
+from .database.tools import get_command_answer
 
 
 
@@ -18,17 +22,24 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+
+command_pool = CommandPool()
+macros = get_macros_number(Cell('A', 3))
+command_pool.add_command(macros)
+command_pool.start()
+
 def main():
-    command_pool = CommandPool()
-    macros = get_macros_connect(Cell('A', 3))
-    command_pool.add_command(macros)
-    command = get_command_select_card(Cell('A', 3))
-    command_pool.add_command(command)
-    command_pool.start()
-    
+    handl()
     while True:
         continue
 
+
+@command_handler(command=macros)
+def handl(command):
+    print("Задача сделана!")
+    # answer = command.command_answer.message.split()[-1]
+    print(command.command_answer.message)
+    
 
 if __name__ == "__main__":
     main()

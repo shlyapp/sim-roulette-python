@@ -1,6 +1,7 @@
 from typing import List
 
 from .command import Command
+from .command_status import CommandStatus
 
 
 class Macros():
@@ -12,3 +13,10 @@ class Macros():
         """UUID"""
         self.command_answer = None
         """Ответ на выполнение макроса"""
+        
+    def is_finish(self) -> bool:
+        if self.command_answer == None:
+            return False
+        if self.command_answer.message.find('complete') != -1:
+            return True
+        return False
