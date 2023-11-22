@@ -6,7 +6,6 @@ import logging
 from ..config import TOKEN, URL
 from .command_status import CommandStatus
 from .command_type import CommandType
-from ..database.tools import save_command_answer
 
 
 class CommandAnswer():
@@ -31,6 +30,7 @@ def get_answer_response() -> str:
     response = requests.get(url=full_url).text
     return response
 
+from ..database.tools import save_command_answer
 
 def fill_command_answer(command, step) -> None:
     """Заполняет данные ответа у команды"""

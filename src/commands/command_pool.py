@@ -62,12 +62,13 @@ class CommandPool():
             command = cast(Command, item)
             command.uuid = uuid.uuid4()
             command.command_answer = CommandAnswer(uuid=item.uuid)
-            logging.info(f"Add command in pool: {item.uuid}")
+            logging.info(f"Add command in pool: {command.uuid}")
             save_command_answer(command)
         else:
             macros = cast(Macros, item)
             macros.uuid = uuid.uuid4()
             macros.command_answer = CommandAnswer(uuid=macros.uuid)
+            logging.info(f"Add macros in pool: {macros.uuid}")
             for macros_command in macros.commands:
                 macros_command.uuid = macros.uuid
                 macros_command.command_answer = CommandAnswer(uuid=macros.uuid)
