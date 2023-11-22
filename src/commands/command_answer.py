@@ -1,6 +1,7 @@
 import uuid
 import requests
 import urllib
+import logging
 
 from ..config import TOKEN, URL
 from .command_status import CommandStatus
@@ -63,6 +64,11 @@ def fill_at_command_answer(command) -> None:
 
 def run_command(command) -> None:
     """Запускает выполнение команды и получает ответ"""
+    logging.info(f"""
+                 Execute command
+                 uuid: {command.uuid}
+                 command_text: {command.command_text}
+                 """)
     step = command.execute()
     command.command_answer.status = CommandStatus.in_progress
     fill_command_answer(command, step)

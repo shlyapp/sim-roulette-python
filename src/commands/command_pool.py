@@ -1,3 +1,5 @@
+import logging
+
 from queue import Queue, Empty
 from typing import cast
 from threading import Thread
@@ -25,13 +27,24 @@ class CommandPool():
                 if isinstance(item, Macros):
                     macros = cast(Macros, item)
                     for command in macros.commands:
-                        (f'Выполнение {command.command_text}')
-                        run_command(command)
                         command.command_answer.status = CommandStatus.in_progress
+                        run_command(command)
+                        logging.info(f"""
+                                     Command answer
+                                     uuid: {command.command_answer.uuid}
+                                     status: {command.command_answer.status}
+                                     message: {command.command_answer.status}
+                                     """)
                 else:
                     command = cast(Command, item)
-                    run_command(command)
                     command.command_answer.status = CommandStatus.in_progress
+                    run_command(command)
+                    logging.info(f"""
+                                     Command answer
+                                     uuid: {command.command_answer.uuid}
+                                     status: {command.command_answer.status}
+                                     message: {command.command_answer.status}
+                                     """)
             except Empty:
                 pass
 
@@ -39,6 +52,7 @@ class CommandPool():
         """Добавить команду в очередь на выполнение"""
         item.uuid = uuid.uuid4()
         item.command_answer = CommandAnswer(uuid=item.uuid)
+        logging.info(f"Add command in pool: {item.uuid}")
         self._queue.put(item)
         return item.uuid
 

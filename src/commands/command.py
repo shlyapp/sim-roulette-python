@@ -16,7 +16,7 @@ class Command:
         """Тип команды"""
         self.uuid = uuid.uuid4()
         """UUID"""
-        self.command_answer = CommandAnswer
+        self.command_answer = CommandAnswer(uuid=uuid.uuid4())
         """Ответ на команду"""
         if command_text.startswith("AT"):
             self.type = CommandType.atcommand
