@@ -1,4 +1,5 @@
 from typing import List
+import uuid
 
 from .database import Database
 from ..config import DATABASE
@@ -24,7 +25,7 @@ def save_simcard(simcard: SIMCard) -> None:
         pass
 
 
-def load_simcard() -> List[SIMCard]:
+def get_simcards() -> List[SIMCard]:
     """Возвращает все СИМ-карты из БД"""
     data = database.select(
         table='main_simroulette',
@@ -41,3 +42,35 @@ def load_simcard() -> List[SIMCard]:
         ))
     
     return simcards
+
+
+def save_command_answer(command) -> None:
+    database.insert_or_update(
+        table='main_simroulettelogs',
+        columns=['operation_uuid', 'command_text', 'status', 'message'],
+        values=[(str(command.command_answer.uuid), 
+                command.command_text, 
+                command.command_answer.status.value, 
+                command.command_answer.message)],
+        unique_columns=['operation_uuid', 'command_text']
+    )
+    
+
+from ..commands.command_answer import CommandAnswer
+
+def get_command_answer(uuid: uuid.UUID):
+    print(uuid)
+    data = database.select(
+        table='main_simroulettelogs',
+        columns=['operation_uuid', 'status', 'message'],
+        condition={'operation_uuid': str(uuid)}
+    )
+    
+    commands_answers = list()
+    for element in data:
+        answer = CommandAnswer(uuid=element[0])
+        answer.status = element[1]
+        answer.message = element[2]
+        commands_answers.append(answer)
+    
+    return commands_answers

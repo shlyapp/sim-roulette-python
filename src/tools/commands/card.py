@@ -1,13 +1,13 @@
-from .command import Command
-from ..cell import Cell
+from ...commands.command import Command
+from ...models.cell import Cell
 
 
-def get_command_select_card(cell: Cell):
+def get_command_select_card(cell: Cell) -> Command:
     """Возвращает команду для выбора СИМ-карты"""
     return Command(f'card:{cell.track}{cell.number}')
 
 
-def get_command_card_out(cell: Cell):
+def get_command_card_out(cell: Cell) -> Command:
     """Возвращает команду для подведения СИМ-карты для извлечения"""
     return Command(f'card>out:{cell.track}{cell.number}')
 

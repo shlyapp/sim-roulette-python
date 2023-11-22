@@ -1,5 +1,4 @@
 import uuid
-import logging
 from fastapi import FastAPI
 from queue import Queue, Empty
 from threading import Thread
@@ -10,7 +9,7 @@ from .models.task_response import TaskResponse
 
 from ..src.database.tools import load_simcard
 from ..src.models.simcard import SIMCard
-from ..src.scripts.scripts import get_sms
+from ..src.scripts_old.scripts import get_sms
 
 
 app = FastAPI()
@@ -43,7 +42,6 @@ consumer_thread = Thread(
 
 
 def get_message(simcard: SIMCard, task: Task) -> TaskResponse:
-    logging.info(f"Start task {task.uuid}")
     task.status = TaskStatus.in_progress
     try:
         result = get_sms(simcard)
@@ -52,7 +50,6 @@ def get_message(simcard: SIMCard, task: Task) -> TaskResponse:
             status=TaskStatus.completed,
             result=result
         )
-        logging.info(f"Task {task.uuid} was comleted succecfully")
         return response
     except Exception:
         response = TaskResponse(
@@ -60,8 +57,6 @@ def get_message(simcard: SIMCard, task: Task) -> TaskResponse:
             status=TaskStatus.failed,
             result=Exception
         )
-        logging.error(f"Task {task.uuid} was completed with error")
-        logging.error(Exception)
 
 
 def have_phone_number(phone_number: str):
@@ -94,7 +89,6 @@ async def get_request_result(uuid_request: str):
 
 @app.post("/api/phone/{phone_number}/message")
 async def add_task(phone_number: str):
-    logging.info(f'Add new task to get message from {phone_number}')
     simcard = have_phone_number(phone_number)
     if simcard == None:
         return {'msg': 'not found phone number'}
@@ -103,7 +97,6 @@ async def add_task(phone_number: str):
         uuid=str(uuid.uuid4()),
         status=TaskStatus.pending
     )
-    logging.info(f'Task {task.uuid} has been add in queue')
     tasks.append(task)
     queue.put(lambda: get_message(simcard, task))
     return task
