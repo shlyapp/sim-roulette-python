@@ -11,8 +11,6 @@ from .models.cell import Cell
 from .database.tools import get_command_answer
 
 
-
-
 logging.basicConfig(
     filename=f"sim-roulette-python/logs/{date.today().strftime('%d-%m-%Y')}.log",
     filemode="a",
@@ -24,7 +22,7 @@ logging.basicConfig(
 
 
 command_pool = CommandPool()
-macros = get_macros_number(Cell('A', 3))
+macros = get_macros_number(Cell('A', 1))
 command_pool.add_command(macros)
 command_pool.start()
 
@@ -37,7 +35,6 @@ def main():
 @command_handler(command=macros)
 def handl(command):
     print("Задача сделана!")
-    # answer = command.command_answer.message.split()[-1]
     print(command.command_answer.message)
     
 
