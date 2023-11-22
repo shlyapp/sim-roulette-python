@@ -3,9 +3,8 @@ from datetime import date
 
 from .commands.command_pool import CommandPool
 from .commands.macros import Macros
-from .commands.command_handler import command_handler
 from .commands.command_answer import CommandStatus
-from .tools.macros import get_macros_number
+from .tools.macros import get_macros_connect
 from .tools.commands.card import get_command_select_card
 from .models.cell import Cell
 from .database.tools import get_command_answer
@@ -22,7 +21,11 @@ logging.basicConfig(
 
 
 command_pool = CommandPool()
+macros = get_macros_connect(Cell('A', 3))
 command_pool.start()
+
+command_pool.add_command(macros)
+
 
 def main():
     while True:

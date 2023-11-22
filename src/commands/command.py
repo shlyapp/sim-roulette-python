@@ -5,6 +5,7 @@ import uuid
 from .command_answer import CommandAnswer
 from .command_type import CommandType
 from .command_status import CommandStatus
+from .command_handler import command_finish
 from ..config import TOKEN, STEP, URL
 
 
@@ -19,9 +20,14 @@ class Command:
         """UUID"""
         self.command_answer = CommandAnswer(uuid=uuid.uuid4())
         """Ответ на команду"""
+        self.finish_event()
         if command_text.startswith("AT"):
             self.type = CommandType.atcommand
-        
+    
+    @command_finish()
+    def finish_event(self) -> None:
+        print("Command has been complete")
+    
     def execute(self) -> int:
         """Выполнение команды, отправка запроса на сервер"""
         global STEP

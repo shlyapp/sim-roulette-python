@@ -8,8 +8,8 @@ parent_dir = os.path.dirname(current_dir)
 os.chdir(parent_dir)
 
 scripts = [
-    # 'sim-roulette-python.src.main'
-    'sim-roulette-python.api.run'
+    'sim-roulette-python.src.main'
+    # 'sim-roulette-python.api.run'
 ]
 
 for script in scripts:
