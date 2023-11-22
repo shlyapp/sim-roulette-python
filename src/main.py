@@ -22,21 +22,12 @@ logging.basicConfig(
 
 
 command_pool = CommandPool()
-macros = get_macros_number(Cell('A', 1))
-command_pool.add_command(macros)
 command_pool.start()
 
 def main():
-    handl()
     while True:
         continue
-
-
-@command_handler(command=macros)
-def handl(command):
-    print("Задача сделана!")
-    print(command.command_answer.message)
-    
+  
 
 if __name__ == "__main__":
     main()
