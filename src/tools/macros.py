@@ -36,3 +36,15 @@ def get_macros_number(cell: Cell) -> Macros:
         Command('AT+CMGR=1')
     ])
     return connect_macros
+
+
+def get_macros_message(cell: Cell) -> Macros:
+    macros = Macros([
+        get_command_select_card(cell),
+        modem_connect,
+        modem_on,
+        modem_activation,
+        Command('AT+CMGR=1')
+    ])
+    
+    return macros

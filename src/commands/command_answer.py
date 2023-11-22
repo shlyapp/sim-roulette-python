@@ -32,7 +32,7 @@ def get_answer_response() -> str:
     response = requests.get(url=full_url).text
     return response
 
-from ..database.tools import save_command_answer, get_command_answer
+from ..database.tools import save_command_answer
 
 def fill_command_answer(command, step) -> None:
     """Заполняет данные ответа у команды"""

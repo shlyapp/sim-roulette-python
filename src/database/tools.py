@@ -59,7 +59,6 @@ def save_command_answer(command) -> None:
 from ..commands.command_answer import CommandAnswer
 
 def get_command_answer(uuid: uuid.UUID):
-    print(uuid)
     data = database.select(
         table='main_simroulettelogs',
         columns=['operation_uuid', 'status', 'message'],
