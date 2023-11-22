@@ -3,6 +3,7 @@ import logging
 from queue import Queue, Empty
 from typing import cast
 from threading import Thread
+from typing import cast
 
 from .macros import Macros
 from .command import Command
@@ -33,7 +34,7 @@ class CommandPool():
                                      Command answer
                                      uuid: {command.command_answer.uuid}
                                      status: {command.command_answer.status}
-                                     message: {command.command_answer.status}
+                                     message: {command.command_answer.message}
                                      """)
                 else:
                     command = cast(Command, item)
@@ -43,18 +44,32 @@ class CommandPool():
                                      Command answer
                                      uuid: {command.command_answer.uuid}
                                      status: {command.command_answer.status}
-                                     message: {command.command_answer.status}
+                                     message: {command.command_answer.message}
                                      """)
             except Empty:
                 pass
 
+    def _assigns_uuid(self, item) -> uuid.UUID:
+        if isinstance(item, Command):
+            command = cast(Command, item)
+            command.uuid = uuid.uuid4()
+            command.command_answer = CommandAnswer(uuid=item.uuid)
+            logging.info(f"Add command in pool: {item.uuid}")
+        else:
+            macros = cast(Macros, item)
+            macros.uuid = uuid.uuid4()
+            for command in macros.commands:
+                command.uuid = macros.uuid
+                command.command_answer = CommandAnswer(uuid=command.uuid)
+            logging.info(f"Add macros in pool: {item.uuid}") 
+                
+        return item.uuid
+
     def add_command(self, item) -> uuid.UUID:
         """Добавить команду в очередь на выполнение"""
-        item.uuid = uuid.uuid4()
-        item.command_answer = CommandAnswer(uuid=item.uuid)
-        logging.info(f"Add command in pool: {item.uuid}")
+        uuid = self._assigns_uuid(item)
         self._queue.put(item)
-        return item.uuid
+        return uuid
 
     def start(self) -> None:
         """Запустить пул комманд"""

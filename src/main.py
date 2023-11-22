@@ -2,6 +2,7 @@ import logging
 
 from .commands.command_pool import CommandPool
 from .tools.macros import get_macros_connect
+from .tools.commands.card import get_command_select_card
 from .models.cell import Cell
 
 logging.basicConfig(
@@ -17,6 +18,8 @@ def main():
     command_pool = CommandPool()
     macros = get_macros_connect(Cell('A', 3))
     command_pool.add_command(macros)
+    command = get_command_select_card(Cell('A', 3))
+    command_pool.add_command(command)
     command_pool.start()
     
     while True:
