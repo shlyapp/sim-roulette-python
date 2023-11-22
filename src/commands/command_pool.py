@@ -9,6 +9,8 @@ from .macros import Macros
 from .command import Command
 from .command_answer import *
 
+from ..database.tools import save_command_answer
+
 
 class CommandPool():
     """Пул команд на выполнение"""
@@ -27,15 +29,21 @@ class CommandPool():
                 
                 if isinstance(item, Macros):
                     macros = cast(Macros, item)
-                    for command in macros.commands:
+                    for i, command in enumerate(macros.commands):
                         command.command_answer.status = CommandStatus.in_progress
                         run_command(command)
+                        
+                        if i == len(macros.commands) - 1:
+                            command.command_answer.message += " complete"
+                            save_command_answer(command)
+                        
                         logging.info(f"""
                                      Command answer
                                      uuid: {command.command_answer.uuid}
                                      status: {command.command_answer.status}
                                      message: {command.command_answer.message}
                                      """)
+                        
                 else:
                     command = cast(Command, item)
                     command.command_answer.status = CommandStatus.in_progress
@@ -55,13 +63,14 @@ class CommandPool():
             command.uuid = uuid.uuid4()
             command.command_answer = CommandAnswer(uuid=item.uuid)
             logging.info(f"Add command in pool: {item.uuid}")
+            save_command_answer(command)
         else:
             macros = cast(Macros, item)
             macros.uuid = uuid.uuid4()
-            for command in macros.commands:
-                command.uuid = macros.uuid
-                command.command_answer = CommandAnswer(uuid=command.uuid)
-            logging.info(f"Add macros in pool: {item.uuid}") 
+            macros.command_answer = CommandAnswer(uuid=macros.uuid)
+            for macros_command in macros.commands:
+                macros_command.uuid = macros.uuid
+                macros_command.command_answer = CommandAnswer(uuid=macros.uuid)
                 
         return item.uuid
 

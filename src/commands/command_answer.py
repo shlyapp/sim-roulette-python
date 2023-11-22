@@ -6,6 +6,7 @@ import logging
 from ..config import TOKEN, URL
 from .command_status import CommandStatus
 from .command_type import CommandType
+from ..database.tools import save_command_answer
 
 
 class CommandAnswer():
@@ -43,10 +44,12 @@ def fill_command_answer(command, step) -> None:
             if data[1] is None or data[1] == "Error" or data[1] == 'NULL' or data[1] == "UNKNOWN COMMAND":
                 command.command_answer.message = data[1]
                 command.command_answer.status = CommandStatus.failed
+                save_command_answer(command)
                 return
 
             command.command_answer.message = data[1]
             command.command_answer.status = CommandStatus.completed
+            save_command_answer(command)
             return
 
 
@@ -70,6 +73,7 @@ def run_command(command) -> None:
                  command_text: {command.command_text}
                  """)
     step = command.execute()
+    save_command_answer(command)
     command.command_answer.status = CommandStatus.in_progress
     fill_command_answer(command, step)
     

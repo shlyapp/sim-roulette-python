@@ -4,8 +4,6 @@ from .database import Database
 from ..config import DATABASE
 from ..models.simcard import SIMCard
 from ..models.cell import Cell
-from ..commands.command_answer import CommandAnswer
-from ..commands.command import Command
 
 database = Database(
     host=DATABASE['HOST'], 
@@ -45,11 +43,18 @@ def get_simcards() -> List[SIMCard]:
     return simcards
 
 
-def save_command_answer(command: Command, command_answer: CommandAnswer) -> None:
-    database.insert(
+def save_command_answer(command) -> None:
+    # print(command.command_answer.status.value)
+    
+    # cursor = database.cursor
+    #     cursor.execute(f'''INSERT INTO main_simroulettelogs (operation_uuid, command_text, status, message) VALUES ('{simcard._cell.track}{simcard._cell.number}', '{simcard._phone_number}');''')
+    
+    database.insert_or_update(
         table='main_simroulettelogs',
         columns=['operation_uuid', 'command_text', 'status', 'message'],
-        values=[command_answer.uuid, command.command_text, command_answer.status, command_answer.message]
+        values=[(str(command.command_answer.uuid), 
+                command.command_text, 
+                command.command_answer.status.value, 
+                command.command_answer.message)],
+        unique_columns=['operation_uuid', 'command_text']
     )
-
-    database.commit()
