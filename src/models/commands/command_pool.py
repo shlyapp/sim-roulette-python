@@ -1,4 +1,3 @@
-import logging
 import uuid
 import requests
 import urllib
@@ -7,9 +6,8 @@ from queue import Queue, Empty
 from threading import Thread
 
 from .command_answer import CommandAnswer, CommandStatus
-
 from ...config import URL, TOKEN
-
+from ...utils.logger import logger
 
 class CommandPool():
     def __init__(self) -> None:
@@ -43,6 +41,7 @@ class CommandPool():
             try:
                 command = self._queue.get()
                 command.command_answer.status = CommandStatus.in_progress
+                logger.info(f"Command with uuid {command.command_answer.uuid} was start")
                 step = command.execute()
                 answer_message = self._get_command_answer(step)
                 command.command_answer.message = answer_message
@@ -51,6 +50,7 @@ class CommandPool():
                 else:
                     command.command_answer.status = CommandStatus.failed
                 command.invoke_callback()
+                logger.info(f"Command with uuid {command.command_answer.uuid} was finish")
                                 
             except Empty:
                 pass
@@ -66,6 +66,7 @@ class CommandPool():
     def add_command(self, item) -> uuid.UUID:
         uuid = self._assigns_uuid(item)
         self._queue.put(item)
+        logger.info(f"Add new command in pool with uuid: {uuid}")
         return uuid
 
     def start(self) -> None:

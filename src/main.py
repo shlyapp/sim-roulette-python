@@ -7,6 +7,8 @@ from .templates.callbacks.default_callback import DefaultCommandCallback
 from .utils.logger import logger
 
 def main():
+    logger.info("Start!")
+    
     command_connect = Command(
         command_text="card:B10",
     )
