@@ -10,5 +10,6 @@ class DefaultCommandCallback(CommandCallback):
         if command_answer.status == CommandStatus.completed:
             logger.info(f"Command {command_answer.uuid} was finish success!")
         else:
-            logger.info(f"Command {command_answer.uuid} was finish with error!")
+            logger.error(f"Command {command_answer.uuid} was finish with error!")
+        logger.info(f"Command answer: {command_answer.message}")
         save_command_answer(command)

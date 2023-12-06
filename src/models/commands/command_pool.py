@@ -9,6 +9,7 @@ from .command_answer import CommandAnswer, CommandStatus
 from ...config import URL, TOKEN
 from ...utils.logger import logger
 
+
 class CommandPool():
     def __init__(self) -> None:
         self._thread = Thread(
@@ -26,16 +27,18 @@ class CommandPool():
         response = requests.get(url=full_url).text
         return response
     
-    def _get_command_answer(self, step):
+    def _get_command_answer(self, command, step):
         while True:     
             response = self._get_answer_response()
-            if response == "0#!#0":
-                continue
             data = response.replace('#', '').split('!')
+            if data[1] == 'NULL' or data[1] == "UNKNOWN COMMAND":
+                command.command_answer.status = CommandStatus.failed
+                return data[1]
             
-            if int(data[0]) == (step - 1):
-                return data
-    
+            if command.validate_answer(response, step, command):
+                command.command_answer.status = CommandStatus.completed
+                return response
+            
     def _command_executor(self) -> None:
         while True:
             try:
@@ -43,12 +46,8 @@ class CommandPool():
                 command.command_answer.status = CommandStatus.in_progress
                 logger.info(f"Command with uuid {command.command_answer.uuid} was start")
                 step = command.execute()
-                answer_message = self._get_command_answer(step)
+                answer_message = self._get_command_answer(command, step)
                 command.command_answer.message = answer_message
-                if command.validate_answer():
-                    command.command_answer.status = CommandStatus.completed
-                else:
-                    command.command_answer.status = CommandStatus.failed
                 command.invoke_callback()
                 logger.info(f"Command with uuid {command.command_answer.uuid} was finish")
                                 

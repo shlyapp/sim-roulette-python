@@ -38,8 +38,8 @@ class Command:
         STEP = STEP + 1
         return STEP
     
-    def validate_answer(self) -> bool:
-        return self.validator.validate(self)
+    def validate_answer(self, response, *args) -> bool:
+        return self.validator.validate(response, *args)
 
     def invoke_callback(self):
         if hasattr(self, 'callback'):
