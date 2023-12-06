@@ -1,42 +1,27 @@
-import logging
-from datetime import date
+from .models.commands.command import Command
+from .models.commands.command_pool import CommandPool
 
-from .commands.command_pool import CommandPool
-from .commands.macros import Macros
-from .commands.command_handler import command_handler
-from .commands.command_answer import CommandStatus
-from .tools.macros import get_macros_number
-from .tools.commands.card import get_command_select_card
-from .models.cell import Cell
-from .database.tools import get_command_answer
+from .templates.validators.default_validator import DefaultCommandValidator
+from .templates.callbacks.default_callback import DefaultCommandCallback
 
-
-logging.basicConfig(
-    filename=f"sim-roulette-python/logs/{date.today().strftime('%d-%m-%Y')}.log",
-    filemode="a",
-    encoding="utf-8",
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%H:%M:%S",
-    level=logging.INFO,
-)
-
-
-command_pool = CommandPool()
-macros = get_macros_number(Cell('A', 1))
-command_pool.add_command(macros)
-command_pool.start()
+from .utils.logger import logger
 
 def main():
-    handl()
-    while True:
-        continue
-
-
-@command_handler(command=macros)
-def handl(command):
-    print("Задача сделана!")
-    print(command.command_answer.message)
+    command_connect = Command(
+        command_text="card:B10",
+    )
+    command_modem_connect = Command(
+        command_text="modem>connect",
+    )
+    command_modem_on = Command(
+        command_text="modem>on",
+    )
+    command_pool = CommandPool()
+    command_pool.add_command(command_connect)
+    command_pool.add_command(command_modem_connect)
+    command_pool.add_command(command_modem_on)
+    command_pool.start()
     
-
+    
 if __name__ == "__main__":
-    main()
+    main()    
