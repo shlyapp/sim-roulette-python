@@ -1,0 +1,8 @@
+from .default_command_validator import DefaultCommandValidator
+from .default_at_command_validator import DefaultATCommandValidator
+from .modem_activation_validator import ModemActivationValidator
+
+
+default_command_validator = DefaultCommandValidator()
+default_at_command_validator = DefaultATCommandValidator()
+modem_activation_validator = ModemActivationValidator()

@@ -55,8 +55,7 @@ def save_command_answer(command) -> None:
         unique_columns=['operation_uuid', 'command_text']
     )
     
-
-from ..commands.command_answer import CommandAnswer
+from ..models.commands.command_answer import CommandAnswer
 
 def get_command_answer(uuid: uuid.UUID):
     data = database.select(
