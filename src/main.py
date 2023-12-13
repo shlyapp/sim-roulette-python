@@ -9,8 +9,7 @@ from time import sleep
 
 def main():
     logger.info("Start!")
-    
-    
+        
     command_modem_connect = Command(
         command_text="modem>connect",
     )
@@ -36,6 +35,6 @@ def main():
         command_pool.add_command(command_activation)
         command_pool.add_command(command_send)
 
-    
+
 if __name__ == "__main__":
     main()    
